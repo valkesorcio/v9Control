@@ -1,0 +1,27 @@
+/remark Valk's ChatWindow
+
+
+/remark Feature Wishlist:
+/remark 1. Logs for each channel.
+/remark 2. Working TimeStamp toggle.
+/remark 3. Working Combat/Spell Notification toggle.
+
+/action {[FORM] %0 tells everyone, '%1'.} {/showother {vChat.mm} {@AnsiBold()@ForeCyan()$0@ForeCyan():$1}}{vChat}
+/action {[CHAT%0] %1(%2): %3} {/showother {vChat.mm} {@AnsiBold()@ForeMagenta()$1@ForeBlue()(@ForeWhite()$2@ForeBlue())@ForeCyan():$3}} {vChat}
+/action {[BLOODLINE] %0 heard you say, %1} {/showother {vChat.mm}{@AnsiBold()@ForeRed()YOU:(@ForeWhite()$0@ForeRed())@ForeWhite() $1}} {vChat}
+/action {[BLOODLINE] %0 says, %1} {/showother {vChat.mm}{@AnsiBold()@ForeRed()$0: @ForeWhite()$1}} {vChat}
+/action {[CLAN] You feel %0 say, %1} {/showother {vChat.mm} {@AnsiBold()@ForeYellow()$0:@ForeCyan()$1}}{vChat}
+/action {[CLAN] %0% heard you say, %1}{/showother {vChat.mm} {@AnsiBold()@ForeYellow()You@ForeGreen()(@ForeCyan()$0%@ForeGreen()):@ForeCyan()$1}}{vChat}
+/action {[TOWN] %0 %1 (%2) says, %3} {/showother {vChat.mm} {@AnsiBold()@ForeGreen()$1(@ForeCyan()$2@ForeGreen())@ForeCyan():$3}} {vChat} 
+/action {[ADVENTURE] %1: %2}{/showother {vChat.mm}{@AnsiBold()@ForeGreen()$1@ForeBlue():@ForeCyan() $2}}{vChatAdv}
+/action {[IMM] %0:: %1} {/showother {vChat.mm} {@AnsiBold()@ForeBlue()$0:[@ForeWhite()IMM@ForeBlue()]:@ForeCyan()$1}} {vChat}
+/action {[LEGEND] %0: %1} {/showother {vChat.mm} {@AnsiBold()@ForeBlue()$0 [@ForeWhite()LEGEND@ForeBlue():@ForeCyan()$1}} {vChat}
+/action {%0 telepaths you, '%1'.}{/showother {vChat.mm}{@AnsiBold()@ForeRed()(To @ForeYellow()$nameplate@ForeRed()) FROM:$0> $1};vpsst}{vChat}
+/action {You telepath %0, '%1'.}{/showother {vChat.mm} {@AnsiBold()@ForeRed()TO:$0> $1}}{vChat}
+/action {*%0 says, '%1'.} {/showother {vChat.mm} {@AnsiBold()@ForeYellow()*@ForeBlack()$0 says, '$1'.}} {vChat}
+/action {*%0 says to you, '%1'.}{/showother {vChat.mm} {@AnsiBold()@ForeYellow()*@ForeBlack()$0 says to you, '$1'.}} {vChat}
+/action {*You say, '%1'.}{/showother {vChat.mm}{@AnsiBold()@ForeCyan()*@ForeBlack()YOU: $1}}{vChat}
+/action {You hear %0 shout, '%1'.} {/showother {vChat.mm}{@AnsiBold()@ForeMagenta()$0:$1}}{vChat}
+/action {You shout, '%0'.}{/showother {vChat.mm}{@AnsiBold()@ForeMagenta()YOU: $0}}{vChat}
+
+/remark /action {[CHAT%0] %1(%2): %3} {/showother {vChat.mm} {[C]$1($2): $3}} {vChat}

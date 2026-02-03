@@ -1,0 +1,91 @@
+/remark Valk's MP Bar
+/remark Intended for your Multiplay - have critical info at a glance.
+/remark It's not pretty. I'm not sure how to make it so.
+
+/remark FEATURE WISH LIST (WORK IN PROGRESS):
+/remark Full Bar for Buffs, HP/MP, Portal Status, and More.
+/remark Target Health % in combat.
+/remark update donation timer to include token donations
+
+/remark Declaring Empty Variables
+/var {Hunger} { } {vBar}
+/var {Thirst} { } {vBar}
+/var {currentXP} { } {vBar}
+/var {life} {1} {vBar}
+/var {ismail} { } {vBar}
+/var {dhourtimer} { } {vBar}
+/var {hhourtimer} { } {vBar}
+/var {fhourtimer} { } {vBar}
+
+/remark Events:
+/remark 300 seconds is a "score" command, to refresh Vitality and Gold Carried.
+/event {BarRefresh1} {300} {score} {vBar}
+
+/remark Internal number crunching to make gold easier to read
+/alias {crunchgold} {/var goldtype k;/var goldchange @replace($goldcrunch,\,,);/math {goldchange} {$goldchange/1000};/if {$goldchange > 999}{/var GoldCarried {@Left($goldchange,1).@SubStr($goldchange,1,1)m};/if {$goldchange > 9999}{/var GoldCarried {@Left($goldchange,2).@Right($goldchange,1)m};/updatebaritem GoldCarried}};/if {$goldchange < 1000}{/var GoldCarried @ConCat($goldchange,k)}}{vBar}
+/alias {goldk} {/math {goldchange} {$goldchange / 1000};/var GoldCarried $goldchangek} {vBar}
+
+/alias {crunchxp} {/var xptype k;/var xpchange @replace($xpchange,-,);/if {$xpchange > 999999} {/var {xptype} {m};/math {xpchange} {$xpchange/100000}};/if {$xpchange > 99}{xp3dig};/if {$xpchange > 999}{xp4dig}}{vBar}
+/alias {xp3dig} {/var currentXP {@Left($xpchange,2).@Right($xpchange,1)$xptype};/if {$life == 0} {/var currentXP CORPSE};/updatebaritem currentXP;/window {MasterBar.mms}{/assign {$nameplate}{4,1}{$currentXP};/updatestatusbar;/window {MasterBar.mms}{/assign {$nameplate}{4}{$currentXP}}}} {vBar}
+/alias {xp4dig} {/var currentXP {@Left($xpchange,3).@Right($xpchange,1)$xptype};/if {$life == 0} {/var currentXP CORPSE};/updatebaritem currentXP;/window {MasterBar.mms}{/assign {$nameplate}{4,1}{$currentXP};/updatestatusbar;/window {MasterBar.mms}{/assign {$nameplate}{4}{$currentXP}}}} {vBar}
+
+/remark Grab Variables dynamically from scoresheet and status prompt
+/action {Gold Coins: %0 %1 Fae Magic: %2} {/var goldcrunch $0;/var FaeCarried $2;crunchgold} {vBar}
+/action {<%0/%1hp %2/%3m %4>} {/var cHP $0;/var cMP $2;/updatebaritem CurrentHP;/updatebaritem CurrentMP;/window {MasterBar.mms} {/assign {$nameplate}{1,1}{$cHP};/assign {$nameplate}{2,1}{$cMP}} {vBar}
+/action {<%0br %1xp %2>} {/var xpchange @replace($1,\,,);crunchxp} {vBar}
+/action {Vitality:%0 %1% Prestige: %2}{/var Vitality {@Right($1,2)}}{vBar}
+/action {You are thirsty.} {/var Thirst T} {vBar}
+/action {You are hungry.} {/var Hunger H} {vBar}
+/action {Your thirst has been quenched.} {/var Thirst { }} {vBar}
+/action {You are full.} {/var Hunger { }} {vBar}
+/action {You've deposited %0} {sc} {vBar}
+/action {You've withdrawn %0} {sc} {vBar}
+/action {[MAIL]}{/var {ismail} {!}}{vBar}
+/remark /action {You receive %1 from %2.} {/var {ismail} { };/chatall broadcast=Received $1 from $2.}{vBar}
+/alias {receive} {/var ismail { };recie} {vBar}
+
+/remark TIMERS
+/event {FaeXPTimer} {60} {/if {$fhourtimer > 0} {/math {fhourtimer} {$fhourtimer-1}};/if {$fhourtimer==0} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta()*** *** *** FAE XP EXPIRED *** *** ***};/disableevent FaeXPTimer;/var fhourtimer { }};/updatebaritem FaeTimer} {vBar}
+/diableevent {FaeXPTimer}
+
+/event {DonationXPTimer} {60} {/if {$dhourtimer > 0} {/math {dhourtimer} {$dhourtimer-1}};/if {$dhourtimer==0} {/disableevent DonXPTimer;/showother {MasterBar.mms} {@AnsiBold()@ForeCyan()*** *** *** DONATION XP EXPIRED *** *** ***};/var dhourtimer { }};/updatebaritem DonTimer} {vBar}
+/disableevent {DonationXPTimer}
+
+/event {HourglassXPTimer} {60} {/if {$hhourtimer > 0} {/math {hhourtimer} {$hhourtimer-1}};/if {$hhourtimer==0} {/disableevent HourglassXPTimer;/window {MasterBar.mms} {@AnsiBold()@ForeYellow()*** *** *** HOURGLASS XP EXPIRED *** *** ***};/var hhourtimer { }};/updatebaritem HourglassTimer} {vBar}
+/disableevent {HourglassXPTimer}
+
+/alias {faetimer60} {/var fhourtimer 60;/enableevent FaeXPTimer;/updatebaritem FaeTimer} {vBar}
+/alias {dontimer60} {/var dhourtimer 60;/enableevent DonationXPTimer;/updatebaritem DonTimer} {vBar}
+/alias {hgtimer60} {/var hhourtimer 60;/enableevent HourglassXPTimer;/updatebaritem HourglassTimer} {vBar}
+
+/action {You suddenly feel much more confident and experienced!} {faetimer60} {vBar}
+/action {Done! You have used one token with %0 for an hour of double experience for a total of 60 minutes of playtime.} {dontimer60} {vBar}
+
+/remark TOP BAR
+/baritem {MailNotification} {$ismail} {1} {1} {12} {0} {vBar}
+/baritem {Nameplate} {$nameplate} {2} {12} {14} {0} {vBar}
+/baritem {FaeTimer} {$fhourtimer} {23}{2}{13}{0} {vBar}
+/baritem {DonTimer} {$dhourtimer} {25}{2}{11}{0} {vBar}
+/baritem {HourglassTimer} {$hhourtimer} {27}{2}{14}{0} {vBar}
+/remark BOTTOM BAR
+/remark 
+/remark /baritem {CurrentXP} {$currentXP} {31}{6}{7}{0} {vBar}
+/remark /barseparator {XP Seperator} {37} {vBar}
+/baritem {CurrentHP}{$cHP}{31}{4}{12}{0} {vBar}
+/baritem {CurrentMP}{$cMP}{35}{4}{9}{0} {vBar}
+/baritem {GoldCarried} {$GoldCarried} {42} {5} {14} {0} {vBar}
+/baritem {Vitality} {$Vitality%} {39} {3} {7} {0} {vBar}
+/remark /baritem {Vitality Separator} {%}{48}{1}{7}{0}{vBar}
+/remark /baritem {Life} {$Life} {31}{6}{7}{0} {vBar}
+
+/alias {showvBarhelp} {vbluedash;/showme {@AnsiBold()@ForeYellow()vBar - Help and Options};vbluedash;/showme {@AnsiBold()@ForeCyan()bartall @ForeWhite()(default) - @ForeBlue()Sets the statusbar to be two-rows (meant for compact window)};/showme {@AnsiBold()@ForeCyan()barwide @ForeWhite() - @ForeBlue()Sets the status bar to be a single row (takes more space)};/showme {@AnsiBold()@ForeRed()  !  @ForeWhite()- Designates the character has pending @ForeRed()[MAIL]};/showme { 77% @AnsiBold()@ForeWhite()- current Vitality};/showme {@AnsiBold()@ForeBlue() 999 @ForeWhite()- current mana};/showme {@AnsiBold()@ForeRed() 555 @ForeWhite()- current hp};/showme {@AnsiBold()@ForeYellow() 88m @ForeWhite()- current carried gold}} {vBar}
+
+/alias {setname} {/var nameplate {@Replace(@SessionName(),.mms,)};/updatebaritem Nameplate} {vBar}
+/action {Unlife floods your veins, and you clamber to your feet, ready to search for your soul.} {/var life 0;crunchxp;/updatebaritem CurrentXP}{vBar}
+/action {%0 breathing life into your body.} {/var life 1;crunchxp;/updatebaritem CurrentXP}{vBar}
+/statusbarsize {2} {30}
+setname
+/statusbar above
+showvBarhelp
+/gag {<%0/%1hp %2/%3m} {vBar}
+prompt set #w[&FS&FF&FI&FL&FM&FP&FQ&FV&FW&FB&FC&FG&FO#w] &k <#x&h#b/&Hhp #x&m#b/&Mm #x&v#b/&V&umv #x&b#b&ubr #w&X#bxp #x&Rr#w> &W

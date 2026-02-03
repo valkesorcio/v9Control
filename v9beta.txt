@@ -1,0 +1,239 @@
+/listadd {whitelist} {v9}
+/listadd {mpchargers} {v9}
+/listadd {mputil} {v9}
+/listadd {mphealers} {v9}
+/listadd {mpstabbers} {v9}
+/listadd {mpcasters} {v9}
+/listadd {mpcustom1} {v9}
+/listadd {mpcustom2} {v9}
+/listadd {mpcustom3} {v9}
+
+/autoexec {/var {v9ver} {0.21} {v9}} {v9}
+/var {v9ver} {0.21} {v9}
+/var {v9author} {Valkesorcio} {v9}
+/var {v9authoremail} {aidan.nutting@gmail.com} {v9}
+/var {healingtarget} {}
+/action {<[%1]%2>} {/var healingtarget $2} {formlead}
+
+/remark Math.dll REQUIRED to be in your root MudMaster folder (ie D:\Games\MudMaster Portable\)
+/loadlib {Math.dll} 
+
+/remark MENU UI STUFFS
+/alias {vbluedash} {/showme {@AnsiBold()@ForeBlue()------------------------------------------------}} {v9}
+/alias {vwhitedash} {/showme {@AnsiBold()@ForeWhite()------------------------------------------------}} {v9}
+/alias {vyellowdash} {/showme {@AnsiBold()@ForeYellow()------------------------------------------------}} {v9}
+/alias {vgreendash} {/showme {@AnsiBold()@ForeGreen()------------------------------------------------}} {v9}
+/alias {vcyandash} {/showme {@AnsiBold()@ForeCyan()------------------------------------------------}} {v9}
+/alias {vmagentadash} {/showme {@AnsiBold()@ForeMagenta()------------------------------------------------}} {v9}
+/alias {vreddash} {/showme {@AnsiBold()@ForeRed()------------------------------------------------}} {v9}
+/alias {vblankline} {/showme { }} {v9}
+/alias {gheader} {vbluedash;/showme {@AnsiBold()@ForeWhite()GROUPINGS:  @ForeCyan()v9groups@ForeWhite(), @ForeCyan()vgroups@ForeWhite(), @ForeCyan()v9g}} {v9}
+
+/alias {v9g} {v9groups} {v9}
+/alias {vgroups} {v9groups} {v9}
+
+/alias {v9help} {v9helpmenu} {v9}
+/alias {v9h} {v9help} {v9}
+/alias {vh} {v9help} {v9}
+/alias {vhelp} {v9help} {v9}
+
+/alias {v9setup} {v9setupmenu} {v9}
+/alias {v9s} {v9setup} {v9}
+/alias {vs} {v9setup} {v9}
+/alias {vsetup} {v9setup} {v9}
+
+/autoexec {/var {nameplate} {@Replace(@SessionName(),.mms,)} {v9}} {v9}
+/var {nameplate} {@Replace(@SessionName(),.mms,)} {v9}
+/alias {v9setupmenu} {vbluedash;/showme {@AnsiBold()@ForeWhite()v9 SETUP         Current You:@ForeYellow()$nameplate};vbluedash;showsetupwelcome;vbluedash;showsetupstep1} {v9}
+
+/alias {addw %0} {/itemadd whitelist $0;showwhitelist} {v9}
+/alias {remw %0} {/itemdelete whitelist $0;showwhitelist} {v9}
+
+/alias {showsetupstep1} {/showme {@AnsiBold()@ForeWhite()STEP 1: WHITE LIST};/showme {@AnsiBold()@ForeBlue()Your white list serves several functions in v9, such as:};/showme {@AnsiBold()@ForeBlue()Auto-accepting follow requests, all-commands, cross-healing, etc.};/showme {@AnsiBold()@ForeRed()Be sure to include yourself (@ForeYellow()$nameplate@ForeRed()) in the white list.};showwhitelist} {v9}
+/alias {showwhitelistcommands} {/showme {@AnsiBold()@ForeWhite()Use "@ForeCyan()addw <name>@ForeWhite()" to add a name to the white list.};/showme {@AnsiBold()@ForeWhite()Use "@ForeCyan()remw <name>@ForeWhite()" to remove a name from the white list.};/showme {@AnsiBold()@ForeWhite()Use "@ForeCyan()wldone@ForeWhite()" to continue to the next setup step.}} {v9}
+/alias {showwhitelist} {/var wlcount {1};showwhitelistcommands;/showme {@AnsiBold()@ForeWhite()CURRENT WHITE LIST:};/showme {@AnsiBold()@ForeWhite()-------------------------};@CommandToList(whitelist,/showme {@AnsiBold()@ForeBlue()$wlcount. @ForeYellow()$ListItem};/math {wlcount} {$wlcount+1})} {v9}
+
+/alias {whitelist} {showwhitelist} {v9}
+/alias {vgroups} {showgroupings} {v9}
+
+/alias {showsetupwelcome} {/showme {@AnsiBold()@ForeWhite()NOTE: @ForeYellow()This setup MUST be ran on your MAIN/COMMANDER window.};/showme {@AnsiBold()@ForeWhite()NOTE: @ForeYellow()Run this setup again on any other window that will LEAD.};/showme {@AnsiBold()@ForeRed()NOTE: @AnsiReset()@ForeRed()Please watch tutorial at <http://y.tube/213451hd>}} {v9}
+
+/alias {wldone} {showsetupstep2} {v9}
+/alias {showsetupstep2} {vbluedash;/showme {@AnsiBold()@ForeWhite()STEP 2: @AnsiReset()@ForeYellow()GROUPINGS};/showme {@ForeYellow()v9 uses groups to smartly issue orders to your mp9.};/showme {@ForeYellow()For instance, your healers can be issued a heal order,};/showme {@ForeYellow()or your mages could be issues a dispel/plague order.};vblankline;/showme {@ForeWhite()v9 issues orders generally in three types:};/showme {@ForeWhite()       All - @ForeBlue()An all-order is sent to an entire group all at once.};/showme {@ForeWhite()     Cycle - @ForeBlue()A cycle-order is sent to an individual in a group,};/showme {@ForeBlue()             cycling through each member, each time a cycle-order};/showme {@ForeBlue()             is given. (Useful for bash, charge, mass-spells, or adv control)};/showme {@ForeWhite()Individual - @ForeBlue()orders to each individual by designated class (more later).};showgroupings}
+
+/alias {showgroupings} {gheader;vbluedash;/showme {@AnsiBold()@ForeWhite()Use '@ForeCyan()addtank, addhealer, addutil, addcaster, addcust1, addcust2, and addcust3 <player#>@ForeWhite()' to add to a list.  (@ForeYellow()Use '@ForeCyan()vgclear@ForeYellow()' to clear all groups@ForeWhite())};/showme {@AnsiBold()@ForeWhite()Use '@ForeCyan()remtank, remhealer, remutil, remcaster, remcust1, remcust2, remcust3 <playername>@ForeWhite()' to remove from a list. (@ForeYellow()Use '@ForeCyan()vgclear@ForeYellow()' to clear all groups@ForeWhite())};/showme {@AnsiBold()@ForeWhite()Use '@ForeCyan()whitelist@ForeWhite()' to reference your white list.};/showme {@AnsiBold()@ForeWhite()Use '@ForeCyan()gdone@ForeWhite()' when finished.}vbluedash;listgroups} {v9}
+
+/alias {listgroups} {/var {tcounter} {1};/showme {@AnsiBold()@ForeRed()Tanks / Chargers |@ForeCyan()vt <cmd> @ForeRed()to all, @ForeCyan()cyt <cmd> @ForeRed()to cycle, @ForeCyan()t# <cmd> @ForeRed()for individual};@CommandToList(mpchargers,/showme {@AnsiBold()@ForeYellow()$tcounter. $ListItem@AnsiReset()};tcountup);/showme {@AnsiBold()@ForeWhite()Healers |@ForeCyan()vh <cmd> @ForeWhite()to all, @ForeCyan()cyh <cmd> @ForeWhite()to cycle, @ForeCyan()h# <cmd> @ForeWhite()for individual};/var {tcounter} {1};@CommandToList(mphealers,/showme {@AnsiBold()@ForeYellow()$tcounter. $ListItem@AnsiReset()};tcountup);/showme {@AnsiBold()@ForeMagenta()Utility (dispel/plaguers) |@ForeCyan()vu <cmd> @ForeMagenta()to all, @ForeCyan()cyu <cmd>@ForeMagenta()to cycle, @ForeCyan()u# <cmd> @ForeMagenta()for individual};/var {tcounter} {1};@CommandToList(mputil,/showme {@AnsiBold()@ForeYellow()$tcounter. $ListItem@AnsiReset()};tcountup);/showme {@AnsiBold()@ForeBlue()Casters / Pounders |@ForeCyan()vc <cmd> @ForeBlue()to all, @ForeCyan()cyc <cmd> @ForeBlue()to cycle, @ForeCyan()c# <cmd> @ForeBlue()for individual};/var {tcounter} {1};@CommandToList(mpcasters,/showme {@AnsiBold()@ForeYellow()$tcounter. $ListItem@AnsiReset()};tcountup);/showme {@AnsiBold()@ForeGreen()Custom 1|@ForeCyan()vc1 <cmd> @ForeGreen()to all, @ForeCyan()cy1 <cmd> @ForeGreen()to cycle, @ForeCyan()c1# <cmd> @ForeGreen()for individual};/var {tcounter} {1};@CommandToList(mpcustom1,/showme {@AnsiBold()@ForeYellow()$tcounter. $ListItem@AnsiReset()};tcountup);/showme {@AnsiBold()@ForeGreen()Custom 2|@ForeCyan()vc2 <cmd> @ForeGreen()to all, @ForeCyan()cy2 <cmd> @ForeGreen()to cycle, @ForeCyan()c2# <cmd> @ForeGreen()for individual};/var {tcounter} {1};@CommandToList(mpcustom2,/showme {@AnsiBold()@ForeYellow()$tcounter. $ListItem@AnsiReset()};tcountup);/showme {@AnsiBold()@ForeGreen()Custom 3|@ForeCyan()vc3 <cmd> @ForeGreen()to all, @ForeCyan()cy3 <cmd> @ForeGreen()to cycle, @ForeCyan()c3# <cmd> @ForeGreen()for individual};/var {tcounter} {1};@CommandToList(mpcustom3,/showme {@AnsiBold()@ForeYellow()$tcounter. $ListItem@AnsiReset()};tcounup)} {v9}
+/alias {tcountup} {/math {tcounter} {$tcounter+1}} {v9}
+
+/alias {v9groups} {showgroupings} {v9}
+
+/alias {gadderror} {/showme {@AnsiBold()@ForeRed()ERROR: User $0 is not listed in the current whitelist.};/showme {@ForeBlue()HINT: Use '@ForeWhite()whitelist@ForeBlue()' to reference your current list.}} {v9}
+
+/alias {addtank %0} {/if {@InList(whitelist,$0)} {/itemadd mpchargers $0;showgroupings} {gadderror}} {v9}
+/alias {addhealer %0 2} {/if {@InList(whitelist,$0)} {/itemadd mphealers $0;showgroupings} {gadderror}} {v9}
+/alias {addutil %0 3} {/if {@InList(whitelist,$0)} {/itemadd mputil $0;showgroupings} {gadderror}} {v9}
+/alias {addcaster %0 4} {/if {@InList(whitelist,$0)} {/itemadd mpcasters $0;showgroupings} {gadderror}} {v9}
+/alias {addcust1 %0 5} {/if {@InList(whitelist,$0)} {/itemadd mpcustom1 $0;showgroupings} {gadderror}} {v9}
+/alias {addcust2 %0 6} {/if {@InList(whitelist,$0)} {/itemadd mpcustom2 $0;showgroupings} {gadderror}} {v9}
+/alias {addcust3 %0 7} {/if {@InList(whitelist,$0)} {/itemadd mpcustom3 $0;showgroupings} {gadderror}} {v9}
+/alias {remtank %0 1} {/itemdelete mpchargers $0;showgroupings} {v9}
+/alias {remhealer %0 2} {/itemdelete mphealers $0;showgroupings} {v9}
+/alias {remutil %0 3} {/itemdelete mputil $0;showgroupings} {v9}
+/alias {remcaster %0 4} {/itemdelete mpcasters $0;showgroupings} {v9}
+/alias {remcust1 %0 5} {/itemdelete mpcustom1 $0;showgroupings} {v9}
+/alias {remcust2 %0 6} {/itemdelete mpcustom2 $0;showgroupings} {v9}
+/alias {remcust3 %0 7} {/itemdelete mpcustom3 $0;showgroupings} {v9}
+
+
+/alias {v9config} {v9configmenu} {v9}
+/alias {v9c} {v9config} {v9}
+/alias {vconfig} {v9config} {v9}
+
+/remark Anyone in your white list will be auto-accepted when they follow you.
+/action {Can %0 follow you? (y/n)>} {/if {@InList(whitelist,$0)}{yes}} {v9}
+
+/remark vx commands to all but you. vxx commands to everyone including you (call dragons, sneak, rest, etc.)
+/alias {vx %0} {/showme {to-all-others: $0};@CommandToList(whitelist,/if {"$ListItem"!="@StripAnsi($nameplate)"} {/window {$ListItem.mms} {$0}})} {v9}
+/alias {vxx %0} {/showme {to-everyone: $0};@CommandToList(whitelist,/window {$ListItem.mms} {$0})} {v9}
+
+
+/remark cyh cycles the next healer, xh healers heal the target, xc healers cure-crit the target, vh commands all healers
+/var {hcycle} {1} {v9}
+
+/alias {cyh %0} {/showme {next-healer: @GetItem(mphealers, $hcycle): $0};/window {@GetItem(mphealers, $hcycle).mms} {$0};hcycleup}} {v9}
+/alias {hcycleup} {/math {hcycle} {$hcycle+1};/if {$hcycle>@GetCount(mphealers)}{/var {hcycle} {1}}} {v9}
+/alias {xh %0} {/showme {to-healers: cross-heal $0};@CommandToList(mphealers,/window {$ListItem.mms} {--;st;c heal $0})} {v9}
+/alias {xc %0} {/showme {to-healers: cross-crit $0};@CommandToList(mphealers,/window {$ListItem.mms} {--;st;c cure crit $0})} {v9}
+/alias {vh %0} {/showme {to-healers: $0};@CommandToList(mphealers,/window {$ListItem.mms} {$0})} {v9}
+/alias {xheal} {/showme {all-healers: Cross-Healing Group};@CommandToList(mphealers,/var thealer $ListItem;@CommandToList(whitelist,/window {$thealer.mms} {c heal $ListItem}))} {v9}
+
+/remark vu commands utility group, xpl plagues, xdm dispels magic, cyu cycles through utility group
+/alias {vu %0} {/showme {to-utilities: $0};@CommandToList(mputil,/window {$ListItem.mms} {$0})} {v9}
+/alias {vpl %0} {/showme {to-utilities: plague $0};@CommandToList(mputil,/window {$ListItem.mms} {--;c pl $0})} {v9}
+/alias {vdm %0} {/showme {to-utilities: dispelmagic $0};@CommandToList(mputil,/window {$ListItem.mms} {--;c dispel magic $0})} {v9}
+/alias {vmuf %0} {/showme {to-utilities: muffle $0};@CommandToList(mputil,/window {$ListItem.mms} {--;c muffle $0})} {v9}
+/var {ucycle} {1} {v9}
+/alias {cyu %0} {/showme {next-utility: @GetItem(mputil, $ucycle): $0};/window {@GetItem(mputil, $ucycle).mms} {$0};ucycleup} {v9}
+/alias {ucycleup} {/math {ucycle} {$ucycle+1};/if {$ucycle>@GetCount(mputil)}{/var {ucycle} {1}}} {v9}
+
+/remark vt sends a command to the tank list, tcharge cycles the next charger, tbash cycles the next basher
+/var {tcycle} {1} {v9}
+/alias {vt %0} {/showme {to-tanks: $0};@CommandToList(mpchargers,/window {$ListItem.mms} {$0})} {v9}
+/alias {tcharge} {/showme {next-charger:@GetItem(mpchargers,$tcycle) charging!};/window {@GetItem(mpchargers,$tcycle).mms} {--;charge};/math {tcycle} {$tcycle+1};/if {$tcycle>@GetCount(mpchargers)} {/var {tcycle} {1}}} {v9}
+/alias {tbash %0} {/showme {next-basher:@GetItem(mpchargers,$tcycle) bashing!};/window {@GetItem(mpchargers,$tcycle).mms} {--;bash $0};/math {tcycle} {$tcycle+1};/if {$tcycle>@GetCount(mpchargers)} {/var {tcycle} {1}}} {v9}
+
+/var {ccycle} {1} {v9}
+/alias {vc %0} {/showme {to-casters: $0};@CommandToList(mpcasters,/window {$ListItem.mms} {$0})} {v9}
+/alias {cyc %0} {/showme {next-caster: @GetItem(mpcasters,$ccycle): $0};/window {@GetItem(mpcasters,$ccycle).mms} {$0});/math {ccycle} {$ccycle+1};/if {$ccycle>@GetCount(mpcasters)} {/var {ccycle} {1}}} {v9}
+/alias {ccycleup} {/math {ccycle} {$ccycle+1};/if {$ccycle>@GetCount(mpcasters)} {/var {ccycle} {1}}} {v9}
+
+/var {cu1cycle} {1} {v9}
+/alias {cy1 %0} {/showme {next-custom1: @GetItem(mpcustom1,$cu1cycle): $0};/window {@GetItem(mpcustom1,$cu1cycle).mms} {$0};/math {cu1cycle} {$cu1cycle+1};/if {$cu1cycle>@GetCount(mpcustom1)}{/var {cu1cycle} {1}}} {v9}
+
+/var {cu2cycle} {1} {v9}
+/alias {cy2 %0} {/showme {next-custom2: @GetItem(mpcustom2,$cu2cycle): $0};/window {@GetItem(mpcustom2,$cu2cycle).mms} {$0};/math {cu2cycle} {$cu2cycle+1};/if {$cu2cycle>@GetCount(mpcustom2)}{/var {cu2cycle} {1}}} {v9}
+
+/var {cu3cycle} {1} {v9}
+/alias {cy3 %0} {/showme {next-custom3: @GetItem(mpcustom3,$cu3cycle): $0};/window {@GetItem(mpcustom3,$cu3cycle).mms} {$0};/math {cu3cycle} {$cu3cycle+1};/if {$cu3cycle>@GetCount(mpcustom3)}{/var {cu3cycle} {1}}} {v9}
+
+
+/alias {cyt %0} {/showme {next-tank: @GetItem(mpchargers,$tcycle): $0};/window {@GetItem(mpchargers,$tcycle).mms} {$0};/math {tcycle} {$tcycle+1};/if {$tcycle>@GetCount(mpchargers)}{/var {tcycle} {1}}} {v9}
+/alias {tcycleup} {/math {tcycle} {$tcycle+1};/if {$tcycle>@GetCount(mpchargers)}{/var {tcycle} {1}}} {v9}
+
+/alias {vc1 %0} {/showme {to-all-custom1: $0};@CommandToList(mpcustom1,/window {$ListItem.mms} {$0})} {v9}
+/alias {vc2 %0} {/showme {to-all-custom2: $0};@CommandToList(mpcustom2,/window {$ListItem.mms} {$0})} {v9}
+/alias {vc3 %0} {/showme {to-all-custom3: $0};@CommandToList(mpcustom3,/window {$ListItem.mms} {$0})} {v9}
+
+/alias {restup} {vxx rest} {v9}
+/alias {standup} {vxx st} {v9}
+/alias {phaseme} {vx c phase $nameplate} {v9}
+
+/alias {t1 %0} {/showme {direct: @GetItem(mpchargers,1): $0};/window {@GetItem(mpchargers,1).mms} {$0}} {v9}
+/alias {t2 %0} {/showme {direct: @GetItem(mpchargers,2): $0};/window {@GetItem(mpchargers,2).mms} {$0}} {v9}
+/alias {t3 %0} {/showme {direct: @GetItem(mpchargers,3): $0};/window {@GetItem(mpchargers,3).mms} {$0}} {v9}
+/alias {h1 %0} {/showme {direct: @GetItem(mphealers,1): $0};/window {@GetItem(mphealers,1).mms} {$0}} {v9}
+/alias {h2 %0} {/showme {direct: @GetItem(mphealers,2): $0};/window {@GetItem(mphealers,2).mms} {$0}} {v9}
+/alias {h3 %0} {/showme {direct: @GetItem(mphealers,3): $0};/window {@GetItem(mphealers,3).mms} {$0}} {v9}
+/alias {h4 %0} {/showme {direct: @GetItem(mphealers,4): $0};/window {@GetItem(mphealers,4).mms} {$0}} {v9}
+/alias {h5 %0} {/showme {direct: @GetItem(mphealers,5): $0};/window {@GetItem(mphealers,5).mms} {$0}} {v9}
+/alias {u1 %0} {/showme {direct: @GetItem(mputil,1): $0};/window {@GetItem(mputil,1).mms} {$0}} {v9}
+/alias {u2 %0} {/showme {direct: @GetItem(mputil,2): $0};/window {@GetItem(mputil,2).mms} {$0}} {v9}
+/alias {u3 %0} {/showme {direct: @GetItem(mputil,3): $0};/window {@GetItem(mputil,3).mms} {$0}} {v9}
+/alias {u4 %0} {/showme {direct: @GetItem(mputil,4): $0};/window {@GetItem(mputil,4).mms} {$0}} {v9}
+/alias {u5 %0} {/showme {direct: @GetItem(mputil,5): $0};/window {@GetItem(mputil,5).mms} {$0}} {v9}
+/alias {c1 %0} {/showme {direct: @GetItem(mpcasters,1): $0};/window {@GetItem(mpcasters,1).mms} {$0}} {v9}
+/alias {c2 %0} {/showme {direct: @GetItem(mpcasters,2): $0};/window {@GetItem(mpcasters,2).mms} {$0}} {v9}
+/alias {c3 %0} {/showme {direct: @GetItem(mpcasters,3): $0};/window {@GetItem(mpcasters,3).mms} {$0}} {v9}
+/alias {c4 %0} {/showme {direct: @GetItem(mpcasters,4): $0};/window {@GetItem(mpcasters,4).mms} {$0}} {v9}
+/alias {c5 %0} {/showme {direct: @GetItem(mpcasters,5): $0};/window {@GetItem(mpcasters,5).mms} {$0}} {v9}
+/alias {c11 %0} {/showme {direct: @GetItem(mpcustom1,1): $0};/window {@GetItem(mpcustom1,1).mms} {$0}} {v9}
+/alias {c12 %0} {/showme {direct: @GetItem(mpcustom1,2): $0};/window {@GetItem(mpcustom1,2).mms} {$0}} {v9}
+/alias {c13 %0} {/showme {direct: @GetItem(mpcustom1,3): $0};/window {@GetItem(mpcustom1,3).mms} {$0}} {v9}
+/alias {c14 %0} {/showme {direct: @GetItem(mpcustom1,4): $0};/window {@GetItem(mpcustom1,4).mms} {$0}} {v9}
+/alias {c15 %0} {/showme {direct: @GetItem(mpcustom1,5): $0};/window {@GetItem(mpcustom1,5).mms} {$0}} {v9}
+/alias {c21 %0} {/showme {direct: @GetItem(mpcustom2,1): $0};/window {@GetItem(mpcustom2,1).mms} {$0}} {v9}
+/alias {c22 %0} {/showme {direct: @GetItem(mpcustom2,2): $0};/window {@GetItem(mpcustom2,2).mms} {$0}} {v9}
+/alias {c23 %0} {/showme {direct: @GetItem(mpcustom2,3): $0};/window {@GetItem(mpcustom2,3).mms} {$0}} {v9}
+/alias {c24 %0} {/showme {direct: @GetItem(mpcustom2,4): $0};/window {@GetItem(mpcustom2,4).mms} {$0}} {v9}
+/alias {c25 %0} {/showme {direct: @GetItem(mpcustom2,5): $0};/window {@GetItem(mpcustom2,5).mms} {$0}} {v9}
+/alias {c31 %0} {/showme {direct: @GetItem(mpcustom3,1): $0};/window {@GetItem(mpcustom3,1).mms} {$0}} {v9}
+/alias {c32 %0} {/showme {direct: @GetItem(mpcustom3,2): $0};/window {@GetItem(mpcustom3,2).mms} {$0}} {v9}
+/alias {c33 %0} {/showme {direct: @GetItem(mpcustom3,3): $0};/window {@GetItem(mpcustom3,3).mms} {$0}} {v9}
+/alias {c34 %0} {/showme {direct: @GetItem(mpcustom3,4): $0};/window {@GetItem(mpcustom3,4).mms} {$0}} {v9}
+/alias {c35 %0} {/showme {direct: @GetItem(mpcustom3,5): $0};/window {@GetItem(mpcustom3,5).mms} {$0}} {v9}
+
+/alias {vgclear} {/showme {@BackRed()@AnsiBold()@ForeYellow()CLEARING ALL v9 GROUP SETS};/clearlist {mpcasters};/clearlist {mpchargers};/clearlist {mphealers};/clearlist {mputil};/clearlist {mpcustom1};/clearlist {mpcustom2};/clearlist {mpcustom3};vgroups}
+
+/alias {openall} {@CommandToList(whitelist,/if {"$ListItem"!="$nameplate"} {/loadsession $ListItem.mms});@CommandToList(whitelist,/window {$ListItem.mms} {/removecaption})} {v9}
+
+/alias {refol %0} {vx refollow $0} {v9}
+
+/alias {v9configmenu} {/showme {----------------};/showme {COMING SOON! (ish)};/showme {Use v9help, v9h, vhelp for help menu};/showme {----------------}} {v9}
+
+/alias {v9loaded} {/event {introtimer} {1} {v9helpmenu}} {v9}
+
+/alias {showhelpheader} {/showme {@AnsiBold()@ForeBlue()------------------------------------------------------------------};/showme {@AnsiBold()@ForeBlue()| @ForeMagenta()v9  Help Menu    @ForeBlue()commands: @ForeCyan()v9help@ForeBlue(), @ForeCyan()v9h@ForeBlue(), @ForeCyan()vhelp           @ForeYellow()ver$v9ver@ForeBlue()|};/showme {@AnsiBold()@ForeBlue()------------------------------------------------------------------}} {v9}
+/alias {v9helpmenu}  {showhelpheader;/showme {@AnsiBold()@ForeBlue()| @ForeRed()NOTE: @ForeYellow()if you have not run the initial setup,                   @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()|       @ForeYellow()use @ForeCyan()v9setup @ForeYellow()to get started.                              @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()------------------------------------------------------------------};/showme {@AnsiBold()@ForeBlue()| @ForeCyan()v9tutorial @ForeBlue()- @ForeWhite()help on default command aliases                   @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()| @ForeCyan()v9groups @ForeBlue()- @ForeWhite()show groups and group admin commands                @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()| @ForeCyan()whitelist @ForeBlue()- @ForeWhite()show and edit your whitelist                       @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()| @ForeCyan()v9config @ForeBlue()- @ForeWhite()show current v9 settings                            @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()| @ForeCyan()openall @ForeBlue()- @ForeWhite()open all windows (after full setup)                  @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()| @ForeCyan()saveall @ForeBlue()- @ForeWhite()Save all @ForeYellow()CHARACTER @ForeWhite()windows.                          @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()| Feel free to @AnsiReset()@ForeWhite()mudmail @AnsiBold()@ForeBlue()me, or @ForeMagenta()Discord @ForeYellow()#hxrxtxc      @ForeWhite()-@ForeYellow()Valkesorcio @ForeBlue()|};/showme {@AnsiBold()@ForeBlue()------------------------------------------------------------------};/unevent introtimer} {v9}
+
+/alias {v9tutorial} {showhelpheader;vbluedash;/showme {@AnsiBold()@ForeYellow()v9   Group Command Aliases};/showme {@AnsiBold()@ForeWhite()These aliases are meant to be easily plugged-in to your own scripts,};/showme {@AnsiBold()@ForeWhite()actions, and aliases. For instance, you can easily point your existing};/showme {@AnsiBold()@ForeWhite()rest/stand aliases to "@ForeCyan()restup@ForeWhite()" or "@ForeCyan()standup@ForeWhite()"};vbluedash;/showme {@AnsiBold()@ForeYellow()All-Commands};/showme {@AnsiBold()@ForeCyan()vxx <command>};/showme {@AnsiBold()@ForeWhite()This performs the given command directly into ALL windows, including YOURS.};/showme {@AnsiBold()@ForeWhite()This is helpful for commands such as resting, calling dragons, or high-5s};/showme {@AnsiBold()@ForeWhite()to do all together.};/showme {@AnsiBold()@ForeCyan()restup};/showme {@AnsiBold()@ForeWhite()performs a "vxx rest", sending the rest command to yourself and all others.};/showme {@AnsiBold()@ForeWhite()you can easily integrate your own macro or alias to point to "restup"};/showme {@AnsiBold()@ForeCyan()standup};/showme {@AnsiBold()@ForeWhite()performs a "vxx --" and "vxx stand" commands to cancel queued commands and stand all.};/showme {@AnsiBold()@ForeCyan()---};/showme {@AnsiBold()@ForeWhite()sends a cancel queue (--) command to everyone};vbluedash;/showme {@AnsiBold()@ForeYellow()All-Others};/showme {@AnsiBold()@ForeCyan()vx <command>};/showme {@AnsiBold()@ForeWhite()performs the given command directly to All-OTHER windows, NOT YOURS.};/showme {@AnsiBold()@ForeWhite()This is helpful when moving the form separately from yourself (cramped rooms, etc)};vbluedash;/showme {@AnsiBold()@ForeYellow()Group Commands};/showme {@AnsiBold()@ForeWhite()Each group has its own all-command and cycle-command};/showme {@AnsiBold()@ForeCyan()vh <command> @ForeBlue()- all healers, or cycle through them with @ForeCyan()cyh <command>};/showme {@AnsiBold()@ForeCyan()vc <command> @ForeBlue()- all casters, or cycle through them with @ForeCyan()cyc <command>};/showme {@AnsiBold()@ForeCyan()vt <command> @ForeBlue()- all tanks, or cycle through them with @ForeCyan()cyt <command>};/showme {@AnsiBold()@ForeCyan()vu <command> @ForeBlue()- all utility, or cycle through them with @ForeCyan()cyu <command>};/showme {@AnsiBold()@ForeCyan()vc1 <command> @ForeBlue()- all custom1, or cycle through them with @ForeCyan()cy1 <command>};/showme {@AnsiBold()@ForeCyan()vc2 <command> @ForeBlue()- all custom2, or cycle through them with @ForeCyan()cy2 <command>};/showme {@AnsiBold()@ForeCyan()vc3 <command> @ForeBlue()- all custom3, or cycle through them with @ForeCyan()cy3 <command>};/showme {@AnsiBold()@ForeWhite()Default Healer Aliases};/showme {@AnsiBold()@ForeCyan()xh <target> @ForeBlue()- (-- cancel queue) and c heal the target};/showme {@AnsiBold()@ForeCyan()xc <target> @ForeBlue()- (-- cancel queue) and c cure crit the target};/showme {@AnsiBold()@ForeCyan()xheal @ForeBlue()- all healers heal ALL characters (full cross-heal, lots of queue-lag)};/showme {@AnsiBold()@ForeWhite()Default Utility Aliases};/showme {@AnsiBold()@ForeCyan()vpl <target> @ForeBlue()- all utility group will cancel queue (--) and c plague <target>};/showme {@AnsiBold()@ForeCyan()vdm <target> @ForeBlue()- all utility group will cancel queue (--) and c dispel magic <target>};/showme {@AnsiBold()@ForeWhite()Default Tank Aliases};/showme {@AnsiBold()@ForeCyan()tbash <target> @ForeBlue()- cycles to next tank and bashes target};/showme {@AnsiBold()@ForeCyan()tcharge @ForeBlue()- cycles to next tank and charges};vbluedash;/showme {@AnsiBold()@ForeYellow()Individual Commands};/showme {@AnsiBold()@ForeWhite()Each member of every group has a corresponding direct-command alias};/showme {@AnsiBold()@ForeYellow()HINT: @ForeBlue()Use '@ForeCyan()v9groups@ForeBlue()' to reference the # and grouping set for each character.};/showme {@AnsiBold()@ForeCyan()Healers};/showme {@AnsiBold()@ForeCyan()h1, h2, h3, h4, or h5 <command> @ForeBlue()- sends command to the individual healer};/showme {@AnsiBold()@ForeRed()Tanks};/showme {@AnsiBold()@ForeCyan()t1, t2, or t3 <command> @ForeBlue()- sends command to the individual tank};/showme {@AnsiBold()@ForeBlue()Casters};/showme {@AnsiBold()@ForeCyan()c1, c2, c3, c4, or c5 <command> @ForeBlue()- sends command to the individual caster};/showme {@AnsiBold()@ForeMagenta()Utility};/showme {@AnsiBold()@ForeCyan()u1, u2, u3, u4, or u5 <command> @ForeBlue()- sends command to the individual utility};/showme {@AnsiBold()@ForeGreen()Custom1};/showme {@AnsiBold()@ForeCyan()c11, c12, c13, c14, or c15 <command>};/showme {@AnsiBold()@ForeGreen()Custom2};/showme {@AnsiBold()@ForeCyan()c21, c22, c23, c24, or c25 <command>};/showme {@AnsiBold()@ForeGreen()Custom3};/showme {@AnsiBold()@ForeCyan()c31, c32, c33, c34, or c35 <command>};/showme {@AnsiBold()@ForeYellow()[PAGE/SCROLL UP TO SEE FULL LIST]}} {v9}
+
+/alias {v9t} {v9tutorial} {v9}
+/alias {v9commands} {v9tutorial} {v9}
+/alias {---} {vxx --} {v9}
+
+/var {goback} { } {v9}
+/alias {got1} {/var goback $nameplate;/loadsession {@GetItem(mpchargers,1).mms};/window {@GetItem(mpchargers,1).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {got2} {/var goback $nameplate;/loadsession {@GetItem(mpchargers,2).mms};/window {@GetItem(mpchargers,2).mms} {/var {goback} {$nameplate}}}   {v9}
+/alias {got3} {/var goback $nameplate;/loadsession {@GetItem(mpchargers,3).mms};/window {@GetItem(mpchargers,3).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goh1} {/var goback $nameplate;/loadsession {@GetItem(mphealers,1).mms};/window {@GetItem(mphealers,1).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goh2} {/var goback $nameplate;/loadsession {@GetItem(mphealers,2).mms};/window {@GetItem(mphealers,2).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goh3} {/var goback $nameplate;/loadsession {@GetItem(mphealers,3).mms};/window {@GetItem(mphealers,3).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goh4} {/var goback $nameplate;/loadsession {@GetItem(mphealers,4).mms};/window {@GetItem(mphealers,4).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goh5} {//var goback $nameplate;loadsession {@GetItem(mphealers,5).mms};/window {@GetItem(mphealers,5).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {gou1} {/var goback $nameplate;/loadsession {@GetItem(mputil,1).mms};/window {@GetItem(mputil,1).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {gou2} {/var goback $nameplate;/loadsession {@GetItem(mputil,2).mms};/window {@GetItem(mputil,2).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {gou3} {/var goback $nameplate;/loadsession {@GetItem(mputil,3).mms};/window {@GetItem(mputil,3).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {gou4} {/var goback $nameplate;/loadsession {@GetItem(mputil,4).mms};/window {@GetItem(mputil,4).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {gou5} {/var goback $nameplate;/loadsession {@GetItem(mputil,5).mms};/window {@GetItem(mputil,5).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goc1} {/var goback $nameplate;/loadsession {@GetItem(mpcasters,1).mms};/window {@GetItem(mpcasters,1).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goc2} {/var goback $nameplate;/loadsession {@GetItem(mpcasters,2).mms};/window {@GetItem(mpcasters,2).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goc3} {/var goback $nameplate;/loadsession {@GetItem(mpcasters,3).mms};/window {@GetItem(mpcasters,3).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goc4} {/var goback $nameplate;/loadsession {@GetItem(mpcasters,4).mms};/window {@GetItem(mpcasters,4).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goc5} {/var goback $nameplate;/loadsession {@GetItem(mpcasters,5).mms};/window {@GetItem(mpcasters,5).mms} {/var {goback} {$nameplate}}} {v9}
+/alias {goback} {/loadsession {$goback.mms}} {v9}
+
+
+/alias {v9config} {vbluedash;/showme {@AnsiBold()@ForeYellow()v9 Control Configuration Panel     @ForeCyan()v9config, vconfig};/showme {@AnsiBold()@ForeWhite()Work in progress, will grow over time. Send suggestions.};vbluedash;/showme {@AnsiBold()@ForeWhite()Useful @ForeYellow()\$Variables @ForeWhite()(@ForeMagenta()currentvalues@ForeWhite())};/showme {@AnsiBold()@ForeYellow()\$nameplate @ForeWhite()(@ForeMagenta()$nameplate@ForeWhite()) - current session's Name (pull from the window .mms)};/showme {@AnsiBold()@ForeYellow()\$hcycle @ForeWhite()(@ForeMagenta()$hcycle, @GetItem(mphealers, $hcycle)@ForeWhite()) - #counter for healers cycle commands};/showme {@AnsiBold()@ForeYellow()\$tcycle @ForeWhite()(@ForeMagenta()$tcycle, @GetItem(mpchargers, $tcycle)@ForeWhite()) - #counter for tank cycle commands};/showme {@AnsiBold()@ForeYellow()\$ucycle @ForeWhite()(@ForeMagenta()$ucycle, @GetItem(mputil, $ucycle)@ForeWhite()) - #counter for utility cycle commands};/showme {@AnsiBold()@ForeYellow()\$ccycle @ForeWhite()(@ForeMagenta()$ccycle, @GetItem(mpcasters, $ccycle)@ForeWhite()) - #counter for caster cycle commands};/showme {@AnsiBold()@ForeYellow()\$cu1cycle @ForeWhite()(@ForeMagenta()$cu1cycle, @GetItem(mpcustom1, $cu1cycle)@ForeWhite()) - #counter for custom1 cycle commands};/showme {@AnsiBold()@ForeYellow()\$cu2cycle @ForeWhite()(@ForeMagenta()$cu2cycle, @GetItem(mpcustom2, $cu2cycle)@ForeWhite()) - #counter for custom2 cycle commands};/showme {@AnsiBold()@ForeYellow()\$cu3cycle @ForeWhite()(@ForeMagenta()$cu3cycle, @GetItem(mpcustom3, $cu3cycle)@ForeWhite()) - #counter for custom3 cycle commands};vbluedash;/showme {@AnsiBold()@ForeYellow()Usable Aliases:};/showme {@AnsiBold()@ForeCyan()hcycleup @ForeWhite()- cycles the next healer in the healer group, without issuing a command};/showme {@AnsiBold()@ForeCyan()ucycleup @ForeWhite()- cycles the next utility in the utility group, without issuing a command};/showme {@AnsiBold()@ForeCyan()tcycleup @ForeWhite()- cycles the next tank in the tank group, without issuing a command};/showme {@AnsiBold()@ForeCyan()ccycleup @ForeWhite()- cycles the next caster in the caster group, without issuing a command};vbluedash;/showme {@AnsiBold()@ForeYellow()Loaded Modules:};/showme {@AnsiBold()@ForeWhite()None};vbluedash;/showme {@AnsiBold()@ForeYellow()Window Quick-swap Commands};/showme {@AnsiBold()@ForeWhite() Use these to swap between each assigned character.};/showme {@AnsiBold()@ForeWhite() Note the "go" plus "t1, t2, t3, etc." naming scheme.};/showme {@AnsiBold()@ForeCyan()got1-5 @ForeBlue()- swap to T# window, ie, @ForeCyan()got1 @ForeBlue()swaps to the T1 / 1st Tank character window};/showme {@AnsiBold()@ForeCyan()gou1-5 @ForeBlue()- swap to U# window, ie, @ForeCyan()gou2 @ForeBlue()swaps to the U2 / 2nd Utility character window};/showme {@AnsiBold()@ForeCyan()goc1-5 @ForeBlue()- swap to C# window, ie, @ForeCyan()goc3 @ForeBlue()swaps to the C3 / 3rd Caster character window};/showme {@AnsiBold()@ForeCyan()goh1-5 @ForeBlue()- swap to H# window, ie, @ForeCyan()goh5 @ForeBlue()swaps to the H5 / 5th Healer character window};vbluedash} {v9}
+
+
+
+
+
+
+/alias {saveall} {@CommandToList(whitelist,/window {$ListItem.mms} {savescripts})} {v9}
+/alias {savescripts} {/write {$nameplate.mm}} {v9}
+
+/alias {vconfig} {v9config} {v9}
+/alias {gdone} {/write {$nameplate.mm};/read vAware.txt;/disableevent {nowhisk}} {v9}
+v9loaded

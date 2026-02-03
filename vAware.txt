@@ -1,0 +1,205 @@
+/remark vAware is an information system for use with mp9
+/remark It uses additional information windows (separate from character/player windows) for:
+/remark Notifications, Minimap, Chatlog, etc.
+/remark It includes a basic status bar (vBar) to help with info at a glance of your mp9.
+/remark It also has sound notifications built in, with configurability.
+/remark Each of these main features should be configuratble or togglable to your liking.
+/remark Additionally, it includes an action package to help keep your mp9 together and coordinated.
+/remark (Auto-Portal, Auto-Flight, Slip-Recovery, Comeback, AutoHide)
+
+
+
+/remark Portal Actions and Notifications
+/var {lastportal} { } {vPortal}
+/alias {enter %0} {/var {lastportal} {$0};ent $lastportal}{vPortal}
+/action {You step into the portal, and the world spins madly...} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeRed()SPUN their portal to @ForeCyan()$lastportal};vnotify} {vAware}
+/action {You step through a portal, and find yourself back in the world of Medievia.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeMagenta()finished port @ForeWhite()SUCCESSFULLY} {vAware}
+/action {You stagger out of the portal, then collapse.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeMagenta()re-entering @ForeWhite()$lastportal};stand;ent $lastportal} {vPortal}
+/alias {allenter %0} {vxx /var lastportal $0;vxx enterlast} {vAware}
+/alias {enterlast} {st;ent $lastportal} {vAware}
+
+/remark No-Whisk
+/event {nowhisk} {60} {sc;l} {vAware}
+
+/remark Auto-Flight
+/action {Your mount turns and heads towards %1.} {/var lastfly $1} {vAware}
+/action {The magic storm confuses your mount!} {fly $lastfly} {vAware}
+
+/remark Slip-Recovery
+/variable {lastdirection} {} } {vAware}
+/action {You follow %1 %0.} {/var {lastdirection} {$0}} {vAware}
+/action {You hit your head on a stalactite.} {--;stand;$lastdirection} {vAware}
+/action {You trip over a small stalagmite and stumble.} {--;stand;$lastdirection} {vAware}
+/action {Your head throbs with a sudden burst of pain as you collide with a stalactite.} {--;stand;$lastdirection} {vAware}
+/action {You slip on the ice, and land on the seat of your pants.} {--;stand;$lastdirection} {vAware}
+/action {%0 quickly dodges your charge.} {--;st;charge} {vAware}
+/action {The wind cackles as a root wraps itself around your foot, causing you to fall flat on your face.} {--;stand;$lastdirection} {vAware}
+
+
+/remark Comeback
+/action {Scanning South...} {/var {looking} {south}} {ComeBackDir}
+/action {Scanning West ...} {/var {looking} {west}} {ComeBackDir}
+/action {Scanning East ...} {/var {looking} {east}} {ComeBackDir}
+/action {Scanning North...} {/var {looking} {north}} {ComeBackDir}
+/action {Scanning Down ...} {/var {looking} {down}} {ComeBackDir}
+/action {Scanning Up   ...} {/var {looking} {up}} {ComeBackDir}
+/action {$returntarget i%1here.} {--;$looking;nod;$doit;/disablegroup {ComeBack}} {ComeBack}
+/action {in a near-blind panic.} {--;scan;scan;scan} {ComeBack}
+/alias {comeback} {/action {$returntarget i%1here.} {--;$looking;nod;$doit;/killgroup {tmpComeBack}}{tmpComeBack};/var {doit} { };--;checkhere;scan;scan;scan} {vAware}
+/alias {checkhere} {/var {looking} { };look} {vAware}
+/alias {fleeback %0} {--;/var {doit} {$0};/enablegroup {ComeBack};flee} {vAware}
+/alias {cb} {@CommandToList(whitelist,/window {$ListItem.mms} {/var returntarget $nameplate});@CommandToList(whitelist,/if {"$ListItem"!=$nameplate} {/window {$ListItem.mms} {comeback})}} {vAware}
+/remark two Aliases - Fleeback and Comeback. 
+/remark default alias - cb tells all in whitelist to comeback to you.
+/remark Fleeback gives a command after the flee - such as backstab, recite scroll, whatever you want. 
+/remark The comeback just has them scan and return.
+/disablegroup {ComeBack}
+
+/remark AutoDoor
+/action {It seems to be locked.} {unl $lastdoor $lastdirection} {vAware}
+/action {The %0 %1 to be closed.} {/var lastdoor $0;open $lastdoor $lastdirection} {vAware}
+
+/remark Refollow and Speedwalk
+/alias {refol %0} {/var {dirs} {@Replace($0, ,;)};@CommandToList(whitelist,/window {$ListItem.mms} {/var {refollow} {$nameplate}});@CommandToList(whitelist,/if {"$ListItem"!=$nameplate} {/window {$ListItem.mms} {$dirs;refollow})}} {vAware}
+/alias {refollow} {follow $refollow} {vAware}
+
+
+/remark Notifications
+/action {Your balance is now %1 gold.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeCyan()Remaining Balance: @ForeWhite()$1};vcoins} {vAware}
+/action {Vertigo overcomes you as the magical shield on the area collapses.} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta() -=@ForeRed()SHIELD ROOM EXPIRED@ForeMagenta()=-};vnotify} {vAware}
+/action { ** An imp pops in and gives you %0 as a reward! **} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta()$nameplate @ForeWhite()received a WILD @ForeCyan()$0};vfanfare2} {vAware}
+/action {%0 tons of water remain belowdecks.} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta()Pumping @ForeWhite()$0 tons@ForeBlue() of water below decks.}} {vAware}
+/action {%0hp %2m %4mv %6ac %7hr %8dr %9a} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @AnsiReset()@ForeWhite()@Replace($6, ,)ac @ForeYellow()$7hr @ForeRed()$8dr @ForeMagenta()@Replace($9, ,)a}} {vAware}
+/action {Currently %0 for %1 more hours} {/showother {MasterBar.mms} {@AnsiBold()@ForeBlue()Currently @ForeGreen() $0 @ForeBlue() for @ForeCyan()$1 hours}} {vAware}
+/action {In %0 hours %1 *= %2 for %3 hour%5starts %4} {/showother {MasterBar.mms}{@AnsiBold()@ForeBlue()In @ForeCyan()$0 hours @ForeGreen()$1 @ForeBlue()*= @ForeYellow()$2 @ForeBlue()for @ForeCyan()$3 hours@ForeBlue()}}{vAware}
+/action {Searching the area, you find} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta()HIDDEN FOUND};vnotify} {vAware}
+/action {You are not in a formation.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeRed()is NOT in Formation!!};vnotify} {vAware}
+/action {You are too exhausted to follow.} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta()!ALERT! @ForeYellow()$nameplate @ForeRed()FELL due to @AnsiReset()@ForeYellow()MOVEMENT};vnotify} {vAware}
+/action {You collapse, totally out of breath!} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta()!ALERT! @ForeYellow()$nameplate @ForeRed()FELL due to @AnsiReset()@ForeCyan()BREATH};vnotify} {vAware}
+/action {You collect %0 %1 colored dragon hide scales!} {/showother {MasterBar.mms} {@ForeMagenta()$nameplate @ForeRed()collected @ForeYellow()$0 @ForeWhite()$1 @ForeRed()hides!}} {vAware}
+/action {You have to stand up before you can do that.} {--;stand;/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeRed()CANCELS command queue in order to STAND.};vnotify} {vAware}
+/action {You must remain undead for %0 more} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeBlue()needs @ForeWhite()$0 @ForeBlue()more minutes to resurrect.}} {vAware}
+/action {You need to wield a weapon} {--;wield ww00;/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeRed()has been @ForeWhite()DISARMED  @ForeRed()(rearming @ForeCyan()ww00 @ForeRed()and cancelling action queue)};vnotify} {vAware}
+/action {You realize it didn't think you had enough gold.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeRed()FAILS to call a @ForeGreen()Dragon@ForeRed(). ( @ForeWhite()Broke @ForeRed())};vnotify} {vAware}
+/action {You receive %0 from %1.} {/showme {@Len($1)};/if {@Len($1) < 14} {/showother {MasterBar.mms} {@AnsiBold()@ForeRed()[MAIL] @ForeMagenta()$nameplate@ForeWhite(): @ForeCyan()$0 @ForeWhite()from @ForeYellow()$1@ForeWhite().};vnotify}} {vAware}
+/action {following: %0.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeCyan()received a MEDAL for: @ForeRed()$0}} {vAware}
+/action {Your ice shield melts.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeCyan()ICESHIELD @ForeRed()DROPS!!};vnotify} {vAware}
+/action {Your iceshield melts in place.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeCyan()ICESHIELD @ForeRed()DROPS!!};vnotify} {vAware}
+/action {Your iceshield melts into a puddle.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeCyan()ICESHIELD @ForeRed()DROPS!!};vnotify} {vAware}
+/action {%2...hunting someone!} {/showother {MasterBar.mms} {@AnsiBold()@ForeRed()!!!!!!!!!!!!!****DRAGON HUNTING****!!!!!!!!!!!!};vdanger} {vAware}
+/action {Your momentum %0 - %1} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta() $nameplate's WILD energy stirs: $1};vnotify} {1} {1}} {vAware}
+/action {Your momentum glows with strength - on the verge of reward.} {/chatall broadcast=::::Momentum Imminent::::;vnotify} } {vAware}
+/action {%0 seems to be blinded!} {/showother {MasterBar.mms} {@AnsiBold()@ForeWhite()$0 @ForeRed()has been @ForeCyan()BLINDED!!};vnotify}  {vAware}
+/action {%0 turns %1 eyes away and screams!} {/showother {MasterBar.mms} {@AnsiBold()@ForeWhite()$0 @ForeRed()has been @ForeCyan()BLINDED!!}} {vAware}
+/action {A strong force prevents you from removing %0} {/showother {MasterBar.mms} {@AnsiBold()@ForeRed()WARNING!!! @ForeMagenta()<Hold>@ForeRed() IS STUCK!!};valknotify} {vAware}
+/action {An awful scent nearby alerts you to a possible Troll attack.} {/showother {MasterBar.mms} {@AnsiBold()@ForeRed()TROLLS TROLLS TROLLS!!!};vnotify} {vAware}
+/action {The white glow around %0's body fades.} {/showother {MasterBar.mms} {@AnsiBold()@ForeWhite()$0 is DISPELLED!!!};/playwave {D:\Medievias MudMaster\Sounds\med-dispel.wav} {1} {1}} {vAware}
+/action {There are %0 coins.} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()Looted @ForeWhite()$0 @ForeYellow() gold coins.};valkcoins} {vAware}
+/action {You get an uneasy feeling and glance over your shoulder ... at nothing.} {/showother {MasterBar.mms} {@AnsiBold()@ForeRed() **** DANGER!! BANDITOS!! ****};/playwave {D:\Medievias MudMaster\Sounds\med-notify.wav} {1} {1}} {vAware}
+/action {You hear the bone-chilling war cry of a horde of Trolls.} {/showother {MasterBar.mms} {@AnsiBold()@ForeRed() TROLLS TROLLS TROLLS};/playwave {D:\Medievias MudMaster\Sounds\med-notify.wav} {1} {1}} {vAware}
+/action {You step on what used to be a human. Trolls must have ripped him apart.} {/showother {MasterBar.mms} {@AnsiBold()@ForeRed()TROLLS TROLLS TROLLS};/playwave {D:\Medievias MudMaster\Sounds\med-notify.wav} {1} {1}} {vAware}
+/action {%0[%1][CLE][ lv %2| %3/%4hp%5/%6m%7/%8mv]} {/math {per1} {@Replace(  $3, ,)/$4*100};/math {per2}{@Replace(  $5, ,)/$6*100};/math {per3} {@Replace(  $7, ,)/$8*100};/if {$per1==100} {/var {hcolor}{@ForeWhite()}};/if {$per1<100} {/var {hcolor} {@ForeGreen()}};/if {$per1<76} {/var {hcolor} {@ForeYellow()}};/if {$per1<26} {/var {hcolor} {@ForeRed()}};/if {$per2==100} {/var {mcolor}{@ForeWhite()}};/if {$per2<100} {/var {mcolor} {@ForeGreen()}};/if {$per2<76} {/var {mcolor} {@ForeYellow()}};/if {$per2<26} {/var {mcolor} {@ForeRed()}};/if {$per3==100} {/var {vcolor}{@ForeWhite()}};/if {$per3<100} {/var {vcolor} {@ForeGreen()}};/if {$per3<76} {/var {vcolor} {@ForeYellow()}};/if {$per3<26} {/var {vcolor} {@ForeRed()}};/showother {MasterBar.mms} {@AnsiBold()@ForeGreen()$0@ForeBlue()[@ForeWhite()$1@ForeBlue()][@AnsiReset()@ForeCyan()CLE@AnsiBold()@ForeBlue()|$hcolor$3@ForeBlue()hp$mcolor$5@ForeBlue()m$vcolor$8@ForeBlue()mv]}} {vAware}
+/action {%0[%1][MAG][ lv %2| %3/%4hp%5/%6m%7/%8mv]} {/math {per1} {@Replace(  $3, ,)/$4*100};/math {per2}{@Replace(  $5, ,)/$6*100};/math {per3} {@Replace(  $7, ,)/$8*100};/if {$per1==100} {/var {hcolor}{@ForeWhite()}};/if {$per1<100} {/var {hcolor} {@ForeGreen()}};/if {$per1<76} {/var {hcolor} {@ForeYellow()}};/if {$per1<26} {/var {hcolor} {@ForeRed()}};/if {$per2==100} {/var {mcolor}{@ForeWhite()}};/if {$per2<100} {/var {mcolor} {@ForeGreen()}};/if {$per2<76} {/var {mcolor} {@ForeYellow()}};/if {$per2<26} {/var {mcolor} {@ForeRed()}};/if {$per3==100} {/var {vcolor}{@ForeWhite()}};/if {$per3<100} {/var {vcolor} {@ForeGreen()}};/if {$per3<76} {/var {vcolor} {@ForeYellow()}};/if {$per3<26} {/var {vcolor} {@ForeRed()}};/showother {MasterBar.mms} {@AnsiBold()@ForeGreen()$0@ForeBlue()[@ForeWhite()$1@ForeBlue()][@AnsiReset()@ForeMagenta()MAG@AnsiBold()@ForeBlue()|$hcolor$3@ForeBlue()hp$mcolor$5@ForeBlue()m$vcolor$8@ForeBlue()mv]}} {vAware}
+/action {%0[%1][THI][ lv %2| %3/%4hp%5/%6m%7/%8mv]} {/math {per1} {@Replace(  $3, ,)/$4*100};/math {per2}{@Replace(  $5, ,)/$6*100};/math {per3} {@Replace(  $7, ,)/$8*100};/if {$per1==100} {/var {hcolor}{@ForeWhite()}};/if {$per1<100} {/var {hcolor} {@ForeGreen()}};/if {$per1<76} {/var {hcolor} {@ForeYellow()}};/if {$per1<26} {/var {hcolor} {@ForeRed()}};/if {$per2==100} {/var {mcolor}{@ForeWhite()}};/if {$per2<100} {/var {mcolor} {@ForeGreen()}};/if {$per2<76} {/var {mcolor} {@ForeYellow()}};/if {$per2<26} {/var {mcolor} {@ForeRed()}};/if {$per3==100} {/var {vcolor}{@ForeWhite()}};/if {$per3<100} {/var {vcolor} {@ForeGreen()}};/if {$per3<76} {/var {vcolor} {@ForeYellow()}};/if {$per3<26} {/var {vcolor} {@ForeRed()}};/showother {MasterBar.mms} {@AnsiBold()@ForeGreen()$0@ForeBlue()[@ForeWhite()$1@ForeBlue()][@AnsiReset()@ForeYellow()THI@AnsiBold()@ForeBlue()|$hcolor$3@ForeBlue()hp$mcolor$5@ForeBlue()m$vcolor$8@ForeBlue()mv]}} {vAware}
+/action {%0[%1][WAR][ lv %2| %3/%4hp%5/%6m%7/%8mv]} {/math {per1} {@Replace(  $3, ,)/$4*100};/math {per2}{@Replace(  $5, ,)/$6*100};/math {per3} {@Replace(  $7, ,)/$8*100};/if {$per1==100} {/var {hcolor}{@ForeWhite()}};/if {$per1<100} {/var {hcolor} {@ForeGreen()}};/if {$per1<76} {/var {hcolor} {@ForeYellow()}};/if {$per1<26} {/var {hcolor} {@ForeRed()}};/if {$per2==100} {/var {mcolor}{@ForeWhite()}};/if {$per2<100} {/var {mcolor} {@ForeGreen()}};/if {$per2<76} {/var {mcolor} {@ForeYellow()}};/if {$per2<26} {/var {mcolor} {@ForeRed()}};/if {$per3==100} {/var {vcolor}{@ForeWhite()}};/if {$per3<100} {/var {vcolor} {@ForeGreen()}};/if {$per3<76} {/var {vcolor} {@ForeYellow()}};/if {$per3<26} {/var {vcolor} {@ForeRed()}};/showother {MasterBar.mms} {@AnsiBold()@ForeGreen()$0@ForeBlue()[@ForeWhite()$1@ForeBlue()][@AnsiReset()@ForeRed()WAR@AnsiBold()@ForeBlue()|$hcolor$3@ForeBlue()hp$mcolor$5@ForeBlue()m$vcolor$8@ForeBlue()mv]}} {vAware}
+/action {Your formation consists of:} {/showother {MasterBar.mms} {@AnsiBold()@ForeWhite()---------------------------------------}} {vAware}
+/action {%0          Directions} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0          Storm Types} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0          ~~~~~~~~~%1} {/if {@Len($1)==1} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}}} {vAware}
+/action {%0          ~~~~~~~~~~~} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0       A = Storm From Afar} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0       F = Fire Storm} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0       H = Hurricane} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0       L = Lightning Storm} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0       M = Magic Storm} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0       R = Rain Storm} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0       T = Tornado} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0       W = Wasp Swarm} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0     < = Storm heading West} {/showother {MasterBar.mms}{@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0     > = Storm heading East} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0     ^ = Storm heading North} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {%0     v = Storm heading South} {/showother {MasterBar.mms} {@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace(@Replace($0,F,@AnsiBold()@ForeRed()F),R,@AnsiBold()@ForeBlue()R),L,@AnsiBold()@ForeCyan()L),W,@AnsiBold()@ForeGreen()W),T,@AnsiBold()@ForeYellow()T),H,@AnsiBold()@ForeYellow()H),M,@Ansibold()@ForeMagenta()M),.,@AnsiReset().)}} {vAware}
+/action {You get %0 from %1} {/showother {MasterBar.mms} {@AnsiBold()@ForeMagenta()$nameplate @ForeWhite()loots @ForeYellow()$0}} {vAware}
+
+
+/remark AutoSneak
+/action {DEAD!!} {--;sneak} {vSneak}
+/action {You jump down and dismount} {sneak} {vSneak}
+/action {You stop sneaking.} {sneak} {vSneak}
+/action {%0[%1][%2][ lv } {/var {resting} { };/if {@StrStr($0,R)>0} {/var {resting} {rest}};/if {@StrStr($0,*)<0} {/if {@Replace("$1", ,)!="Valkesorcio"} {/window {@Replace($1, ,).mms} {--;stand;sn;$resting}}};/unvariable {resting}} {vSneak}
+
+/remark AutoFlee
+/action {In your panic-stricken state, you fail to flee.} {--;flee} {vFlee}
+/action {In your panic-stricken state, you fail to get away!} {--;flee} {vFlee}
+
+/remark AutoCPK
+/action {Hidden Capacity %0)? (y/n)>} {/if {cpkyes} {y}} {AutoCPK}
+/alias {togglecpk} {/var {cpkyes} {-$cpkyes};/if {cpkyes} {/showme {@AnsiBold()@ForeRed()--==AUTO ACCEPT CPK TURNED ON==--}}{/showme {@AnsiBold()@ForeGreen()--==AUTO ACCEPT CPK TURNED OFF==--}}} {AutoCPK}
+/var {cpkyes} {-1} {AutoCPK}
+
+/remark AutoPump
+/action {You begin pumping.} {/enableevent AutoPump} {vPump}
+/event {AutoPump} {30} {ship pump} {vPump}
+/alias {pump} {ship pump}{vPump}
+/alias {pumpoff} {/disableevent AutoPump}{vPump}
+/alias {pumpon} {/enableevent AutoPump}{vPump}
+/autoexec {/disableevent {AutoPump}} {vPump}
+/disableevent {AutoPump}
+
+/remark AutoRecast
+/action {You fumble over the correct inflection used to cast Detect Invisibility} {c d i} {vCast}
+/action {You fumble over the correct inflection used to cast Infravision} {c infrav} {vCast}
+/action {You fumble over the correct inflection used to cast Sanctuary} {/showother {MasterBar.mms} {@AnsiBold()@ForeYellow()$nameplate @ForeRed()FAILED @ForeWhite()Sanctuary};vnotify} {vAware}
+
+
+/remark Sound Library
+/alias {vcoins} {/if {$soundon} {/playwave {Sounds\med_coins.wav}{1} {1}}}{vAware}
+/alias {vdanger} {/if {$soundon} {/playwave {Sounds\med-danger.wav}{1} {1}}}{vAware}
+/alias {vfanfare1} {/if {$soundon} {/playwave {Sounds\med-fanfare1.wav}{1} {1}}}{vAware}
+/alias {vfanfare2} {/if {$soundon} {/playwave {Sounds\med-fanfare2.wav}{1} {1}}}{vAware}
+/alias {vnotify} {/if {$soundon} {/playwave {Sounds\med-notify.wav}{1} {1}}}{vAware}
+/alias {vpsst} {/if {$soundon} {/playwave {Sounds\med_psst.wav}{1} {1}}}{vAware}
+/var {soundon} {1} {vAware}
+/alias {togglevsound} {/math {soundon} {$soundon * -1};/if {$soundon} {/showme {@AnsiBold()@ForeGreen()vSound ENABLED};/showother {MasterBar.mms} {@AnsiBold()@ForeGreen()vSound ENABLED}}{/showme {@AnsiBold()@ForeRed()vSound DISABLED};/showother {MasterBar.mms} {@AnsiBold()@ForeRed()vSound DISABLED}}}{vAware}
+
+/remark Auto Fish
+/action {You have caught} {use pole} {vFish}
+
+/remark Map Load and Unload
+/alias {loadMap} {/read mapWindow.mm;/window {Map.mms} {/removecaption}};vbluedash;/showme {@AnsiBold()@ForeYellow()REMEMBER: @ForeWhite()When you've finished adjusting the map window, save both the map window AND THIS SESSION TOO.}} {vAware}
+/alias {unloadMap} {/unautoexec {/loadsession {Map.mms}};/showme {@AnsiBold()@ForeYellow()REMINDER: @ForeWhite()Map Window will no longer automatically open. You must manually close the Map.mms window.}} {vAware}
+/alias {mapinfo} {/showme {@AnsiBold()@ForeWhite()- some advanced tricks with the map window for mp9 (COMING SOON)}} {vAware}
+
+/remark Chat Load and Unload
+/alias {loadViewer} {/autoexec {/loadsession vChat.mm};/showme {@AnsiBold()@ForeYellow()REMINDER: @ForeWhite()When you've adjusted your windows, save (CTRL+S) that window AND THIS WINDOW TOO!!};vxx /read vChat.txt} {vAware}
+/alias {unloadViewer} {/unautoexec {/loadsession vChat.mm}} {vAware}
+
+/remark vBar
+/alias {loadvBar} {vx /read vBar.txt;/showme {@AnsiBold()@ForeYellow()WARNING: Be sure to save any window/font adjustments}} {vAware} 
+/alias {unloadvBar} {vx /killgroup vBar} {vAware}
+
+/remark vPad
+/alias {loadvPad} {vxx /read vPad.txt} {vAware}  
+/alias {unloadvPad} {vxx /killgroup vPad} {vAware}
+/alias {vPadInfo} {vbluedash;/showme {@AnsiBold()@ForeYellow()vPad Default Config};vbluedash;/showme {@AnsiBold()@ForeWhite()Basic movement and form control. You are meant to build your own macros off of this.};/showme {@AnsiBold()@ForeCyan()togglefarsight / togfar @ForeWhite()- toggles between casting and using head slot for farsight. casts by default.};/showme {@AnsiBold()@ForeYellow()Keypad 0@ForeBlue()) (@ForeWhite()scan};/showme {@AnsiBold()@ForeYellow()Keypad 1@ForeBlue()) (@ForeWhite()rouse all};/showme {@AnsiBold()@ForeYellow()Keypad 2@ForeBlue()) (@ForeWhite()south};/showme {@AnsiBold()@ForeYellow()Keypad 3@ForeBlue()) (@ForeWhite()down};/showme {@AnsiBold()@ForeYellow()Keypad 5@ForeBlue()) (@ForeWhite()look};/showme {@AnsiBold()@ForeYellow()Keypad 4@ForeBlue()) (@ForeWhite()west};/showme {@AnsiBold()@ForeYellow()Keypad 6@ForeBlue()) (@ForeWhite()east};/showme {@AnsiBold()@ForeYellow()Keypad 8@ForeBlue()) (@ForeWhite()north};/showme {@AnsiBold()@ForeYellow()Keypad 9@ForeBlue()) (@ForeWhite()up};/showme {@AnsiBold()@ForeYellow()Keypad *@ForeBlue()) (@ForeWhite()vxx rest};/showme {@AnsiBold()@ForeYellow()CTRL+Keypad 2@ForeBlue()) (@ForeWhite()farsight south brief @ForeBlue()(@ForeCyan()togglefarsight@ForeBlue())};/showme {@AnsiBold()@ForeYellow()CTRL+Keypad 3@ForeBlue()) (@ForeWhite()farsight down brief @ForeBlue()(@ForeCyan()togglefarsight@ForeBlue())};/showme {@AnsiBold()@ForeYellow()CTRL+Keypad 4@ForeBlue()) (@ForeWhite()farsight west brief @ForeBlue()(@ForeCyan()togglefarsight@ForeBlue())};/showme {@AnsiBold()@ForeYellow()CTRL+Keypad 5@ForeBlue()) (@ForeWhite()vxx search};/showme {@AnsiBold()@ForeYellow()CTRL+Keypad 6@ForeBlue()) (@ForeWhite()farsight east brief @ForeBlue()(@ForeCyan()togglefarsight@ForeBlue())};/showme {@AnsiBold()@ForeYellow()CTRL+Keypad 8@ForeBlue()) (@ForeWhite()farsight north brief @ForeBlue()(@ForeCyan()togglefarsight@ForeBlue())};/showme {@AnsiBold()@ForeYellow()CTRL+Keypad 9@ForeBlue()) (@ForeWhite()farsight up brief @ForeBlue()(@ForeCyan()togglefarsight@ForeBlue())};/showme {@AnsiBold()@ForeYellow()CTRL+Keypad 0@ForeBlue()) (@ForeWhite()vxx flee};/showme {@AnsiBold()@ForeYellow()ALT+Keypad 5@ForeBlue()) (@ForeWhite()vx comeback $nameplate};/showme {@AnsiBold()@ForeYellow()ALT+Keypad 0@ForeBlue()) (@ForeWhite()flee};vbluedash} {vAware}
+/alias {vPad} {vPadInfo} {vAware}
+
+
+
+
+/remark MasterBar
+/alias {loadMasterBar} {/loadsession {MasterBar.mms};/autoexec {/loadsession MasterBar.mms} {vAware}} {vAware}
+/alias {unloadMasterBar} {/unautoexec {/loadsession MasterBar.mm}} {vAware}
+
+/alias {vAwareintro} {vbluedash;/showme {@AnsiBold()@ForeRed()STEP3: @ForeYellow()vAware - Additional Windows @ForeBlue()(@ForeCyan()step3 @ForeBlue()to return here)};vbluedash;/showme {@AnsiBold()@ForeYellow()First, @ForeWhite()type @ForeCyan()openall @ForeWhite()to open your character windows.};/showme {@AnsiBold()@ForeYellow()Next, @ForeWhite()go through each of the default modules below and try them out.};/showme {@AnsiBold()@ForeRed()When you've installed the modules you wish to use, type @ForeCyan()vsetupdone};/showme {@AnsiBold()@ForeRed()NOTE: @ForeWhite()You should have all of your character windows open when };/showme {@AnsiBold()@ForeWhite()installing or removing modules.};/showme {@AnsiBold()@ForeCyan()openall @ForeWhite()- open all character windows};/showme {@AnsiBold()@ForeWhite()This should open all your saved characters in their respective locations.};vbluedash;/showme {@AnsiBold()@ForeYellow()vBar - Basic Stats at a Glance};vbluedash;/showme {@AnsiBold()@ForeBlue()This is a basic statusbar script meant for your mp9 characters (not yourself)};/showme {@AnsiBold()@ForeBlue()It will display their name, hp, mana, vitality, and carried gold.};/showme {@AnsiBold()@ForeCyan()loadvBar @ForeWhite()- install vBar module (to all other characters). };/showme {@AnsiBold()@ForeCyan()unloadvBar @ForeWhite()- remove vBar module};vbluedash;/showme {@AnsiBold()@ForeYellow()vPad - Basic Keypad Controls};vbluedash;/showme {@AnsiBold()@ForeBlue()While not extensive, this will get you started with some basic controls on keypad.};/showme {@AnsiBold()@ForeCyan()vPadinfo vPad@ForeWhite()- shows default macros and key mappings for vPad};/showme {@AnsiBold()@ForeCyan()loadvPad @ForeWhite()- install vPad keypad macros Module.  };/showme {@AnsiBold()@ForeCyan()unloadvPad @ForeWhite()- remove vPad keypad macros};vbluedash;/showme {@AnsiBold()@ForeYellow()MiniMap - persistent map window};vbluedash;/showme {@AnsiBold()@ForeBlue()This will let you set a window dedicated to showing the zonemap.};/showme {@AnsiBold()@ForeBlue()Very helpful on TRs, or for referencing your location in hazardous areas.};/showme {@AnsiBold()@ForeBlue()With advanced use, can also help with moving mp9 separately from you.};/showme {@AnsiBold()@ForeCyan()mapinfo @ForeWhite()- some advanced tricks with the map window for mp9};/showme {@AnsiBold()@ForeCyan()loadMap @ForeWhite()- load map window (BE SURE TO SAVE WINDOW, CTRL-S)};/showme {@AnsiBold()@ForeCyan()unloadMap @ForeWhite()- remove Map window function and auto-load};vbluedash;/showme {@AnsiBold()@ForeYellow()vChat - basic persistent channel viewer};vbluedash;/showme {@AnsiBold()@ForeCyan()loadViewer @ForeWhite()- install quick-reference window for chats. (BE SURE TO SAVE WINDOWS, CTRL-S)};/showme {@AnsiBold()@ForeCyan()unloadViewer @ForeWhite()- remove the Viewer function and auto-load};vbluedash;/showme {@AnsiBold()@ForeYellow()MasterBar @ForeWhite()- notification and reference window};vbluedash;/showme {@AnsiBold()@ForeBlue()This window captures notifications and certain things that get lost in the spam (such as};/showme {@AnsiBold()@ForeBlue()form reports, @ForeMagenta()WILD@ForeWhite() gear rewards, etc.)};/showme {@AnsiBold()@ForeCyan()loadMasterBar @ForeWhite()- opens notification window (BE SURE TO SAVE WINDOWS, CTRL-S)};/showme {@AnsiBold()@ForeCyan()unloadMasterBar @ForeWhite()- remove notifications window function and auto-load};vbluedash;/showme {@AnsiBold()@ForeRed()[WHEN YOU ARE FINISHED, TYPE @ForeCyan()vsetupdone@ForeRed(), or @ForeCyan()step3 @ForeRed()to repeat this information]};} {vAware}
+/alias {step3} {vAwareintro} {vAware}
+/alias {vAware} {vAwareintro} {vAware}
+
+/alias {vsetupdone} {vx /read v9beta.txt;vx /read vAware.txt;vx clan off;vx town off;vx chat off;vx setcom 18 off;vx setcom 1 off;vx setcom 17 off;vx setcom 13 off;vx setcom 2 off;saveall} {vAware}
+
+
+
+vx /read v9beta.txt
+vx /read vAware.txt
+/event {vAwareIntro} {2} {vAwareintro;/disableevent vAwareIntro} {vAware}
+/enableevent {vAwareIntro}

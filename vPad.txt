@@ -1,0 +1,45 @@
+/remark basic keypad setup
+/var {farsight} {1} {vPad}
+/var {farsightmethod} {c far} {vPad}
+/alias {togglefarsight} {/if {$farsight} {/var {farsightmethod} {use helm};/showme {@AnsiBold()@ForeYellow()Farsight Method changed to @ForeMagenta()HELM}} {/var {farsightmethod} {c far};/showme {@AnsiBold()@ForeYellow()Farsight Method changed to @ForeCyan()CASTING}};/math {farsight} {$farsight*-1}} {vPad}
+/alias {togfar} {togglefarsight} {vPad}
+/macro {kp0} {scan} {vPad}
+/macro {kp1} {rouse all} {vPad}
+/macro {ckp0} {vxx flee} {vPad}
+/macro {kp2} {south;/var lastdirection south} {vPad}
+/macro {kp3} {down;/var lastdirection down} {vPad}
+/macro {kp4} {west;/var lastdirection west} {vPad}
+/macro {kp5} {look} {vPad}
+/macro {kp6} {east;/var lastdirection east} {vPad}
+/macro {kp8} {north;/var lastdirection north} {vPad}
+/macro {kp9} {up;/var lastdirection up} {vPad}
+/macro {ckp8} {$farsightmethod north brief} {vPad}
+/macro {ckp9} {$farsightmethod up brief} {vPad}
+/macro {ckp6} {$farsightmethod east brief} {vPad}
+/macro {ckp2} {$farsightmethod south brief} {vPad}
+/macro {ckp3} {$farsightmethod down brief} {vPad}
+/macro {ckp4} {$farsightmethod west brief} {vPad}
+/macro {ckp5} {vxx search} {vPad}
+/macro {akp5} {vx comeback $nameplate} {vPad}
+/macro {akp0} {flee} {vPad}
+/macro {kpstar} {vxx rest} {vPad}
+/macro {kpplus} {vh --;xc $healingtarget} {vPad}
+/macro {kpminus} {vc x2} {vPad}
+/macro {ckpminus} {vc x1} {vPad}
+/macro {kp7} {tbash} {vPad}
+/macro {ackp5} {g all} {vPad}
+/macro {kpdel} {solo} {vPad}
+/macro {ckpdel} {unform me} {vPad}
+/macro {ackp4} {vx west} {vPad}
+/macro {ackp8} {vx north} {vPad}
+/macro {ackp2} {vx south} {vPad}
+/macro {ackp6} {vx east} {vPad}
+/macro {ackp9} {vx up} {vPad}
+/macro {ackp3} {vx down} {vPad}
+
+
+
+
+
+
+/event {vPadIntro} {1} {vPadInfo;/unevent vPadIntro} {vPad}
