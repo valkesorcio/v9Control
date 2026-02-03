@@ -56,7 +56,7 @@
 /alias {whitelist} {showwhitelist} {v9}
 /alias {vgroups} {showgroupings} {v9}
 
-/alias {showsetupwelcome} {/showme {@AnsiBold()@ForeWhite()NOTE: @ForeYellow()This setup MUST be ran on your MAIN/COMMANDER window.};/showme {@AnsiBold()@ForeWhite()NOTE: @ForeYellow()Run this setup again on any other window that will LEAD.};/showme {@AnsiBold()@ForeRed()NOTE: @AnsiReset()@ForeRed()Please watch tutorial at <http://y.tube/213451hd>}} {v9}
+/alias {showsetupwelcome} {/showme {@AnsiBold()@ForeWhite()NOTE: @ForeYellow()This setup MUST be ran on your MAIN/COMMANDER window.};/showme {@AnsiBold()@ForeWhite()NOTE: @ForeYellow()Run this setup again on any other window that will LEAD.};/showme {@AnsiBold()@ForeRed()NOTE: @AnsiReset()@ForeRed()Please watch tutorial at <https://www.youtube.com/watch?v=zyCOpeBpEk4>}} {v9}
 
 /alias {wldone} {showsetupstep2} {v9}
 /alias {showsetupstep2} {vbluedash;/showme {@AnsiBold()@ForeWhite()STEP 2: @AnsiReset()@ForeYellow()GROUPINGS};/showme {@ForeYellow()v9 uses groups to smartly issue orders to your mp9.};/showme {@ForeYellow()For instance, your healers can be issued a heal order,};/showme {@ForeYellow()or your mages could be issues a dispel/plague order.};vblankline;/showme {@ForeWhite()v9 issues orders generally in three types:};/showme {@ForeWhite()       All - @ForeBlue()An all-order is sent to an entire group all at once.};/showme {@ForeWhite()     Cycle - @ForeBlue()A cycle-order is sent to an individual in a group,};/showme {@ForeBlue()             cycling through each member, each time a cycle-order};/showme {@ForeBlue()             is given. (Useful for bash, charge, mass-spells, or adv control)};/showme {@ForeWhite()Individual - @ForeBlue()orders to each individual by designated class (more later).};showgroupings}
