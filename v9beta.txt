@@ -71,19 +71,19 @@
 /alias {gadderror} {/showme {@AnsiBold()@ForeRed()ERROR: User $0 is not listed in the current whitelist.};/showme {@ForeBlue()HINT: Use '@ForeWhite()whitelist@ForeBlue()' to reference your current list.}} {v9}
 
 /alias {addtank %0} {/if {@InList(whitelist,$0)} {/itemadd mpchargers $0;showgroupings} {gadderror}} {v9}
-/alias {addhealer %0 2} {/if {@InList(whitelist,$0)} {/itemadd mphealers $0;showgroupings} {gadderror}} {v9}
-/alias {addutil %0 3} {/if {@InList(whitelist,$0)} {/itemadd mputil $0;showgroupings} {gadderror}} {v9}
-/alias {addcaster %0 4} {/if {@InList(whitelist,$0)} {/itemadd mpcasters $0;showgroupings} {gadderror}} {v9}
-/alias {addcust1 %0 5} {/if {@InList(whitelist,$0)} {/itemadd mpcustom1 $0;showgroupings} {gadderror}} {v9}
-/alias {addcust2 %0 6} {/if {@InList(whitelist,$0)} {/itemadd mpcustom2 $0;showgroupings} {gadderror}} {v9}
-/alias {addcust3 %0 7} {/if {@InList(whitelist,$0)} {/itemadd mpcustom3 $0;showgroupings} {gadderror}} {v9}
-/alias {remtank %0 1} {/itemdelete mpchargers $0;showgroupings} {v9}
-/alias {remhealer %0 2} {/itemdelete mphealers $0;showgroupings} {v9}
-/alias {remutil %0 3} {/itemdelete mputil $0;showgroupings} {v9}
-/alias {remcaster %0 4} {/itemdelete mpcasters $0;showgroupings} {v9}
-/alias {remcust1 %0 5} {/itemdelete mpcustom1 $0;showgroupings} {v9}
-/alias {remcust2 %0 6} {/itemdelete mpcustom2 $0;showgroupings} {v9}
-/alias {remcust3 %0 7} {/itemdelete mpcustom3 $0;showgroupings} {v9}
+/alias {addhealer %0} {/if {@InList(whitelist,$0)} {/itemadd mphealers $0;showgroupings} {gadderror}} {v9}
+/alias {addutil %0} {/if {@InList(whitelist,$0)} {/itemadd mputil $0;showgroupings} {gadderror}} {v9}
+/alias {addcaster %0} {/if {@InList(whitelist,$0)} {/itemadd mpcasters $0;showgroupings} {gadderror}} {v9}
+/alias {addcust1 %0} {/if {@InList(whitelist,$0)} {/itemadd mpcustom1 $0;showgroupings} {gadderror}} {v9}
+/alias {addcust2 %0} {/if {@InList(whitelist,$0)} {/itemadd mpcustom2 $0;showgroupings} {gadderror}} {v9}
+/alias {addcust3 %0} {/if {@InList(whitelist,$0)} {/itemadd mpcustom3 $0;showgroupings} {gadderror}} {v9}
+/alias {remtank %0} {/itemdelete mpchargers $0;showgroupings} {v9}
+/alias {remhealer %0} {/itemdelete mphealers $0;showgroupings} {v9}
+/alias {remutil %0} {/itemdelete mputil $0;showgroupings} {v9}
+/alias {remcaster %0} {/itemdelete mpcasters $0;showgroupings} {v9}
+/alias {remcust1 %0} {/itemdelete mpcustom1 $0;showgroupings} {v9}
+/alias {remcust2 %0} {/itemdelete mpcustom2 $0;showgroupings} {v9}
+/alias {remcust3 %0} {/itemdelete mpcustom3 $0;showgroupings} {v9}
 
 
 /alias {v9config} {v9configmenu} {v9}
